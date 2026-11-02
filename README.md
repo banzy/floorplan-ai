@@ -181,17 +181,17 @@ Start a new session and it's ready. Installing the Claude Code CLI is recommende
 Signed in with ChatGPT. No terminal needed:
 
 1. In the Codex app, open **Plugins** and choose **Add a marketplace**.
-2. For **Source**, enter `haydenschmitty/floorplan` and click **Add marketplace**.
-3. Find **Floorplan** and click **+** to install it.
+2. For **Source**, enter `banzy/floorplan-ai` and click **Add marketplace**.
+3. Find **Floorplan AI** and click **+** to install it.
 
 Or, from a terminal:
 
 ```bash
-codex plugin marketplace add haydenschmitty/floorplan
+codex plugin marketplace add banzy/floorplan-ai
 codex plugin add floorplan-ai@floorplan-ai
 ```
 
-Start a new chat and ask for a floorplan, or type `$floorplan`. The map's Ask bar runs on your own Codex sign-in, with no API key. More in [Floorplan in Codex](docs/codex.md).
+Start a new chat and ask for a floorplan, or type `$floorplan-ai`. The map's Ask bar runs on your own Codex sign-in, with no API key. More in [Floorplan in Codex](docs/codex.md).
 
 ## Quick start
 
