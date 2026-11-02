@@ -20,7 +20,7 @@ Floorplan works in [Codex](https://developers.openai.com/codex) the same way it 
 
 ```bash
 codex plugin marketplace add haydenschmitty/floorplan
-codex plugin add floorplan@floorplan
+codex plugin add floorplan-ai@floorplan-ai
 ```
 
 The app and the CLI share their plugins, so installing in one makes Floorplan available in both.
@@ -31,7 +31,7 @@ Open your project in Codex and ask in plain words:
 
 > Draw a floorplan of this codebase
 
-To call the skill by name, type `$floorplan`. Everything after that is the same as in Claude Code ([Getting started](getting-started.md#make-your-first-map)): Codex scans the code, describes every part, file and web request, builds the map and opens it. Later, "update the floorplan" re-reads only what changed.
+To call the skill by name, type `$floorplan-ai`. Everything after that is the same as in Claude Code ([Getting started](getting-started.md#make-your-first-map)): Codex scans the code, describes every part, file and web request, builds the map and opens it. Later, "update the floorplan" re-reads only what changed.
 
 When Codex opens the map, it asks to run the map's server outside its sandbox. The server has to keep running after the command ends, and the Ask bar needs to reach Codex. If you'd rather not allow it, run the server yourself from the project folder:
 
@@ -63,11 +63,11 @@ In the app, open **Plugins**, find the Floorplan marketplace and choose **Upgrad
 
 ```bash
 codex plugin marketplace upgrade floorplan
-codex plugin add floorplan@floorplan
+codex plugin add floorplan-ai@floorplan-ai
 ```
 
 ```bash
-codex plugin remove floorplan@floorplan
+codex plugin remove floorplan-ai@floorplan-ai
 codex plugin marketplace remove floorplan
 ```
 
@@ -79,7 +79,7 @@ Point Codex at your local clone instead of GitHub:
 
 ```bash
 codex plugin marketplace add /path/to/floorplan
-codex plugin add floorplan@floorplan
+codex plugin add floorplan-ai@floorplan-ai
 ```
 
-Codex copies a local plugin into its cache when you add it (unlike Claude Code, which runs a local plugin straight from the folder). After you change the plugin, run `codex plugin add floorplan@floorplan` again and start a new session.
+Codex copies a local plugin into its cache when you add it (unlike Claude Code, which runs a local plugin straight from the folder). After you change the plugin, run `codex plugin add floorplan-ai@floorplan-ai` again and start a new session.

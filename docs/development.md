@@ -12,7 +12,7 @@
   icon.png
 .agents/plugins/
   marketplace.json     this repo as a Codex marketplace
-skills/floorplan/
+skills/floorplan-ai/
   SKILL.md             the workflow Claude and Codex follow
   agents/openai.yaml   how Codex lists the skill
   references/          formats and style guides Claude reads while working
@@ -50,22 +50,22 @@ Install from your local folder instead of GitHub:
 
 ```bash
 claude plugin marketplace add /path/to/floorplan
-claude plugin install floorplan@floorplan
+claude plugin install floorplan-ai@floorplan-ai
 ```
 
 A plugin installed from a local folder runs straight from it, so edits apply in the next session with no update step.
 
-To try it in Codex, see [Trying a working copy](codex.md#trying-a-working-copy). Codex copies a local plugin when you add it, so run `codex plugin add floorplan@floorplan` again after each change. `--agent claude|codex` on build.mjs (or `FLOORPLAN_AGENT`) and `--engine claude|codex` on serve.mjs let you try either agent's map from anywhere.
+To try it in Codex, see [Trying a working copy](codex.md#trying-a-working-copy). Codex copies a local plugin when you add it, so run `codex plugin add floorplan-ai@floorplan-ai` again after each change. `--agent claude|codex` on build.mjs (or `FLOORPLAN_AGENT`) and `--engine claude|codex` on serve.mjs let you try either agent's map from anywhere.
 
 The scripts also run on their own, which is the fastest way to work on them:
 
 ```bash
-node skills/floorplan/scripts/scan.mjs /path/to/project
-node skills/floorplan/scripts/build.mjs /path/to/project
-node skills/floorplan/scripts/open.mjs /path/to/project
+node skills/floorplan-ai/scripts/scan.mjs /path/to/project
+node skills/floorplan-ai/scripts/build.mjs /path/to/project
+node skills/floorplan-ai/scripts/open.mjs /path/to/project
 ```
 
-`build.mjs` needs a `floorplan/architecture.json` in the project, so run the skill once first, or write a small one by hand ([schema](../skills/floorplan/references/schema.md)).
+`build.mjs` needs a `floorplan/architecture.json` in the project, so run the skill once first, or write a small one by hand ([schema](../skills/floorplan-ai/references/schema.md)).
 
 ## Tests
 
@@ -103,7 +103,7 @@ When you fix a bug in what Floorplan detects, add a sample that shows it, and ch
 
 ## Extending the viewer
 
-Files in `skills/floorplan/assets/ui/` are inlined into every map, in name order. They talk to the viewer only through `window.Floorplan`, which offers:
+Files in `skills/floorplan-ai/assets/ui/` are inlined into every map, in name order. They talk to the viewer only through `window.Floorplan`, which offers:
 - the graph and lookups;
 - navigation (`go`, `open`, `reveal`, `showBoard`, `playFlow`);
 - `addHeaderButton` and `addPanelSection('overview' | 'item', fn)`;
@@ -174,7 +174,7 @@ An engine must be read-only in a way its CLI enforces, not only because the prom
    claude plugin tag . -m "Floorplan %s" --push
    ```
 7. On GitHub, publish a release from the tag (`floorplan--vX.Y.Z`), titled `Floorplan X.Y.Z`, with that version's changelog section as its notes.
-8. Reply on every issue and pull request the release fixes: what changed, the version, and how to get it (`claude plugin update floorplan@floorplan`).
+8. Reply on every issue and pull request the release fixes: what changed, the version, and how to get it (`claude plugin update floorplan-ai@floorplan-ai`).
 
 ### Issues and pull requests
 

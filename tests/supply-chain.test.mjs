@@ -173,11 +173,11 @@ test('checksums tell an exact copy of a release from a changed one', async () =>
     const same = run(copy);
     assert.ok(same.ok, same.out);
     assert.match(same.out, /all \d+ files are identical/);
-    fs.appendFileSync(path.join(copy, 'skills', 'floorplan', 'scripts', 'build.mjs'), '\n// changed\n');
-    fs.writeFileSync(path.join(copy, 'skills', 'floorplan', 'scripts', 'extra.mjs'), '');
+    fs.appendFileSync(path.join(copy, 'skills', 'floorplan-ai', 'scripts', 'build.mjs'), '\n// changed\n');
+    fs.writeFileSync(path.join(copy, 'skills', 'floorplan-ai', 'scripts', 'extra.mjs'), '');
     const diff = run(copy);
     assert.equal(diff.ok, false);
-    assert.match(diff.out, /Changed:\n {2}skills\/floorplan\/scripts\/build\.mjs/);
-    assert.match(diff.out, /Not in the release:\n {2}skills\/floorplan\/scripts\/extra\.mjs/);
+    assert.match(diff.out, /Changed:\n {2}skills\/floorplan-ai\/scripts\/build\.mjs/);
+    assert.match(diff.out, /Not in the release:\n {2}skills\/floorplan-ai\/scripts\/extra\.mjs/);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });

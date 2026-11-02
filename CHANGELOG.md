@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.0 (2026-11-02)
 
 - **An AI view for apps that use AI.** When the scan finds code that calls an AI service, the map gets an **AI** button. It answers where AI is used, what is sent to it, what checks requests and keeps the cost under control, and which services it talks to, and it can walk one request from the app through instructions, safety and cost checks to the AI service. It finds OpenAI, Anthropic, Groq, Gemini, Mistral, ElevenLabs and others by host or package, and calls made through a configured address by their request path. The skill now asks for plain descriptions of the AI files, an AI flow of the app's real steps, and a plain report of whether calls have safety and cost limits. Apps with no AI are unchanged.
 

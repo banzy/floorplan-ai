@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const scripts = path.join(here, '..', 'skills', 'floorplan', 'scripts');
+const scripts = path.join(here, '..', 'skills', 'floorplan-ai', 'scripts');
 
 /** Copies a fixture to a temp folder, maps it as one module, and returns the built graph. */
 function buildFixture(name) {

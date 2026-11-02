@@ -37,7 +37,7 @@ Plugins load when a session starts, so start a new one after installing. Check t
 claude plugin list
 ```
 
-Plain requests like "make me a floorplan" work without the slash command. If you do want it, it's `/floorplan:floorplan`.
+Plain requests like "make me a floorplan" work without the slash command. If you do want it, it's `/floorplan-ai:floorplan-ai`.
 
 In Codex, check **Plugins** in the app, or run `codex plugin list`, and start a new chat after installing. To call it by name, type `$floorplan`.
 

@@ -18,7 +18,7 @@ Floorplan works in **Claude Code** and in **Codex**. Making and using a map is t
 
 ```bash
 claude plugin marketplace add haydenschmitty/floorplan
-claude plugin install floorplan@floorplan
+claude plugin install floorplan-ai@floorplan-ai
 ```
 
 The first command adds this repository as a plugin source. The second installs Floorplan for all your projects. The desktop app and the CLI share the same settings, so it shows up in both.
@@ -37,7 +37,7 @@ The first command adds this repository as a plugin source. The second installs F
 
    > Make me a floorplan of this app.
 
-   In Claude Code you can also pick **floorplan** from the **/** menu, or type `/floorplan:floorplan`. In Codex, type `$floorplan`.
+   In Claude Code you can also pick **floorplan** from the **/** menu, or type `/floorplan-ai:floorplan-ai`. In Codex, type `$floorplan-ai`.
 
 3. **Let it work.** This is what happens:
    - A scan lists every file, import, endpoint and web request. This takes seconds and costs no tokens.
@@ -97,7 +97,7 @@ For Codex, see [Update or remove it](codex.md#update-or-remove-it).
 In Claude Code, plugins installed from GitHub don't update automatically unless you turn that on. To get the latest version:
 
 ```bash
-claude plugin update floorplan@floorplan
+claude plugin update floorplan-ai@floorplan-ai
 ```
 
 Or turn on automatic updates: in a Claude Code session, run `/plugin`, open **Marketplaces**, and choose **Enable auto-update**. Either way, updates apply in your next session. See the [changelog](../CHANGELOG.md) for what changed.
@@ -105,7 +105,7 @@ Or turn on automatic updates: in a Claude Code session, run `/plugin`, open **Ma
 ## Remove it
 
 ```bash
-claude plugin uninstall floorplan@floorplan
+claude plugin uninstall floorplan-ai@floorplan-ai
 ```
 
 In Codex, see [Update or remove it](codex.md#update-or-remove-it). Then delete the `floorplan/` folder (and, if you used Claude Code, the Floorplan section of `CLAUDE.local.md`) from any project you used it in.

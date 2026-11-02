@@ -32,9 +32,9 @@ Your edits to `architecture.json` and `descriptions/` are kept on every update. 
 
 Or just ask Claude or Codex ("rename 'Main server' to 'Shop API' on the floorplan").
 
-A blueprint is edited the same way, through `plan.json` and `architecture.json`, or from the map with the Ask bar's **Change** switch. The plan's format is in [`blueprint.md`](../skills/floorplan/references/blueprint.md).
+A blueprint is edited the same way, through `plan.json` and `architecture.json`, or from the map with the Ask bar's **Change** switch. The plan's format is in [`blueprint.md`](../skills/floorplan-ai/references/blueprint.md).
 
-The full format is in [`skills/floorplan/references/schema.md`](../skills/floorplan/references/schema.md), and the style guide for names and descriptions is in [`writing-descriptions.md`](../skills/floorplan/references/writing-descriptions.md).
+The full format is in [`skills/floorplan-ai/references/schema.md`](../skills/floorplan-ai/references/schema.md), and the style guide for names and descriptions is in [`writing-descriptions.md`](../skills/floorplan-ai/references/writing-descriptions.md).
 
 ## `CLAUDE.local.md`
 

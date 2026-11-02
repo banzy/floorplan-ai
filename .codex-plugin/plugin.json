@@ -1,7 +1,7 @@
 {
-  "name": "floorplan",
-  "version": "0.6.1",
-  "description": "See how your app actually fits together: an interactive map of your codebase where every part, file and web request has a plain-English name and description, with a health check, screens, guided flows, questions answered on the map, and highlights of what was just worked on.",
+  "name": "floorplan-ai",
+  "version": "0.7.0",
+  "description": "A fork of Floorplan that adds an AI view: for apps that use AI, see where it is used, what is sent, what checks and limits it, and follow one request. See how your app actually fits together: an interactive map of your codebase where every part, file and web request has a plain-English name and description, with a health check, screens, guided flows, questions answered on the map, and highlights of what was just worked on.",
   "author": {
     "name": "Hayden Smith",
     "url": "https://github.com/haydenschmitty"
@@ -21,7 +21,7 @@
   "skills": "./skills/",
   "requires_local_executor": true,
   "interface": {
-    "displayName": "Floorplan",
+    "displayName": "Floorplan AI",
     "shortDescription": "See how your app fits together",
     "longDescription": "Codex reads your codebase and draws an interactive map of it. Every part, file and web request gets a plain-English name and description, and every connection between them is shown. It adds a health check for exposed keys and endpoints anyone can change, your app's screens, guided flows, highlights of what was just worked on, and an Ask bar that answers questions on the map using your own Codex sign-in.",
     "developerName": "Hayden Smith",

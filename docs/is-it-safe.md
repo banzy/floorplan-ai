@@ -40,7 +40,7 @@ In Claude Code, while the skill is in use, it pre-approves one kind of command: 
 
 ### Three things worth explaining
 
-- **`skills/floorplan/assets/vendor/elk.bundled.js`** is a 1.6 MB minified file: the layout engine that arranges the map. It's [elkjs](https://github.com/kieler/elkjs) 0.9.3, byte for byte the same as the official package on npm. Its SHA-256 is `b0745abd7f23cd91690a1587e377edbe19fd7233c783300290936720546216d4`. To check it yourself:
+- **`skills/floorplan-ai/assets/vendor/elk.bundled.js`** is a 1.6 MB minified file: the layout engine that arranges the map. It's [elkjs](https://github.com/kieler/elkjs) 0.9.3, byte for byte the same as the official package on npm. Its SHA-256 is `b0745abd7f23cd91690a1587e377edbe19fd7233c783300290936720546216d4`. To check it yourself:
   ```bash
   npm pack elkjs@0.9.3
   tar -xzf elkjs-0.9.3.tgz package/lib/elk.bundled.js

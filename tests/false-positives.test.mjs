@@ -120,12 +120,12 @@ test('the summary leaves dismissed issues out but the issues stay listed', () =>
 });
 
 test('the page applies the same rule as the build', () => {
-  const ui = fs.readFileSync(new URL('../skills/floorplan/assets/ui/20-health.js', import.meta.url), 'utf8');
+  const ui = fs.readFileSync(new URL('../skills/floorplan-ai/assets/ui/20-health.js', import.meta.url), 'utf8');
   for (const piece of [`d.severity && d.severity !== issue.severity`, `String(loc).replace(/:[^:]*$/, '')`, `left.get(l.file) || 0`]) assert.ok(ui.includes(piece), piece);
 });
 
 test('a report opens a GitHub issue for the person to send, and carries no code, fix prompt or detail', () => {
-  const ui = fs.readFileSync(new URL('../skills/floorplan/assets/ui/20-health.js', import.meta.url), 'utf8');
+  const ui = fs.readFileSync(new URL('../skills/floorplan-ai/assets/ui/20-health.js', import.meta.url), 'utf8');
   const report = /const reportText = [\s\S]*?\.join\('\\n'\);/.exec(ui)[0];
   assert.ok(!/issue\.(fix|detail|notes)/.test(report), report);
   assert.ok(/issues\/new/.test(ui));

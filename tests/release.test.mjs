@@ -46,7 +46,7 @@ test('the changelog has an entry for this version', () => {
 
 test('the skill has a name and description, and every file it points to exists', () => {
   const skill = fs.readFileSync(path.join(SKILL, 'SKILL.md'), 'utf8');
-  assert.match(skill, /^---\nname: floorplan\ndescription: .{50,}/);
+  assert.match(skill, /^---\nname: floorplan-ai\ndescription: .{50,}/);
   for (const [, ref] of skill.matchAll(/\]\((references\/[\w.-]+\.md)/g)) assert.ok(fs.existsSync(path.join(SKILL, ref)), ref);
   for (const [, script] of skill.matchAll(/scripts\/(\w+\.mjs)/g)) assert.ok(fs.existsSync(path.join(SKILL, 'scripts', script)), script);
 });
