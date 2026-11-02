@@ -12,6 +12,7 @@ import { fallbackFileName, fallbackRouteName, routeKey } from './lib/names.mjs';
 import { buildHealth, withDismissed, dismissalFor } from './lib/health.mjs';
 import { buildPlanHealth } from './lib/blueprint.mjs';
 import { buildScreens } from './lib/screens.mjs';
+import { buildAi } from './lib/ai.mjs';
 import { writeClaudeMd } from './lib/claudemd.mjs';
 import { detectAgent } from './lib/agent.mjs';
 
@@ -417,6 +418,7 @@ const graph = {
 // a blueprint has no code to check, so its Health is a design review of the plan (computed after screens)
 if (!scan.blueprint) try { graph.health = buildHealth({ graph, scan, arch, root }); } catch (e) { warn(`health check failed: ${e.message}`); graph.health = { issues: [] }; }
 try { graph.screens = buildScreens({ graph, scan, arch, root }); } catch (e) { warn(`screen detection failed: ${e.message}`); graph.screens = []; }
+try { const ai = buildAi({ graph, scan, root }); if (ai) graph.ai = ai; } catch (e) { warn(`AI detection failed: ${e.message}`); }
 if (scan.blueprint) try { graph.health = buildPlanHealth({ graph, scan }); } catch (e) { warn(`design review failed: ${e.message}`); graph.health = { issues: [] }; }
 // issues people marked "not a problem" on the map (saved by serve.mjs) stay listed, set apart, and leave the counts
 const dismissedFile = path.join(outDir, 'health-dismissed.json');
@@ -474,6 +476,7 @@ if (hs && (hs.high || hs.medium || hs.low)) {
   for (const i of graph.health.issues.filter((x) => x.severity !== 'low' && !dismissalFor(x, graph.health.dismissed)).slice(0, 8)) report.push(`  [${i.severity}] ${i.title}`);
 }
 if (graph.screens?.length) report.push(`SCREENS  ${graph.screens.length} detected`);
+if (graph.ai) report.push(`AI  ${graph.ai.files.length} file(s) across ${graph.ai.providers.length} provider(s): ${graph.ai.providers.map((p) => p.label).join(', ')}`);
 report.push(graph.recent
   ? `RECENT WORK  ${graph.recent.items.length} card(s) highlighted across ${graph.recent.tasks.length} task(s)`
   : `RECENT WORK  none highlighted${fs.existsSync(recentFile) ? '' : ' (no recent-work.json)'}`);

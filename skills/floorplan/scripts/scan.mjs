@@ -12,6 +12,7 @@ import { discover, gitFiles, gitInfo, classify, toPosix, parseArgs, fmtNum, HARD
 import { extract, callableCallsVia } from './lib/extract.mjs';
 import { findIssues } from './lib/health.mjs';
 import { findScreens } from './lib/screens.mjs';
+import { findAi } from './lib/ai.mjs';
 import { createResolver } from './lib/resolve.mjs';
 import { resolveRoutes, matchCalls } from './lib/routes.mjs';
 
@@ -79,10 +80,11 @@ for (const { path: p, repo } of fileList) {
       f.h = hash(src);
       f.sig = hash(JSON.stringify([(f.symbols || []).map((s) => s.name).sort(), (f.routes || []).map((r) => `${r.method} ${r.path}`).sort(), f.doc || '']));
     }
-    // extension hooks: per-file health findings (lib/health.mjs) and app screens (lib/screens.mjs)
+    // extension hooks: per-file health findings (lib/health.mjs), app screens (lib/screens.mjs) and AI roles (lib/ai.mjs)
     if (src.length) {
       try { const iss = findIssues(src, f); if (iss?.length) f.issues = iss; } catch (e) { f.healthError = String(e.message || e); }
       try { const scr = findScreens(src, f); if (scr?.length) f.screens = scr; } catch (e) { f.screensError = String(e.message || e); }
+      try { const ai = findAi(src, f); if (ai) f.ai = ai; } catch (e) { f.aiError = String(e.message || e); }
     }
   } else if (category === 'code' || category === 'config' || category === 'docs') {
     // too big to read and parse, but still on the map: count its lines without loading it all
@@ -175,6 +177,7 @@ const scan = {
     ...(f.tooLarge ? { tooLarge: true } : {}),
     ...(f.issues ? { issues: f.issues } : {}),
     ...(f.screens ? { screens: f.screens } : {}),
+    ...(f.ai ? { ai: f.ai } : {}),
     ...(f.triggers ? { triggers: f.triggers } : {}),
   })),
   edges: [...edgeMap.values()].map(({ from, to, names, count, dynamic }) => ({ from, to, ...(names.length ? { names } : {}), ...(count > 1 ? { count } : {}), ...(dynamic ? { dynamic } : {}) })),
@@ -310,6 +313,16 @@ if (unread.length) {
   line(`NOT READ  ${unread.length} file(s) over ${fmtNum(maxBytes / 1024)} KB: on the map, but their imports, endpoints, requests and secrets weren't checked. Re-run scan.mjs with --max-file-kb <bigger> to read them.`);
   for (const f of unread.slice(0, 15)) line(`  ${fmtNum(Math.round(f.bytes / 1024)).padStart(6)} KB  ${f.path}`);
   if (unread.length > 15) line(`  … ${unread.length - 15} more`);
+  line();
+}
+// AI: files that talk about prompts, safety, cost or a provider request path (build.mjs adds the ones that call a provider by host or package)
+const aiFiles = code.filter((f) => f.ai && !/(^|\/)(tests?|__tests__|fixtures?)\/|\.(test|spec)\./i.test(f.path));
+const aiHosts = [...new Set(hosts.filter((h) => /openai|anthropic|groq|generativelanguage|aiplatform|mistral|cohere|together|openrouter|deepseek|x\.ai|perplexity|elevenlabs|typesafe|replicate|huggingface/i.test(h.host)).map((h) => h.host))];
+if (aiFiles.length || aiHosts.length) {
+  const roles = {};
+  for (const f of aiFiles) for (const r of f.ai.roles) roles[r] = (roles[r] || 0) + 1;
+  line(`AI  ${aiFiles.length} file(s) look like part of an AI feature (${Object.entries(roles).map(([k, v]) => `${k} ${v}`).join(', ') || 'no roles yet'})${aiHosts.length ? `; AI hosts called: ${aiHosts.join(', ')}` : ''}`);
+  line('  The build adds an AI button for these; see "The AI layer" in SKILL.md for what to write by hand.');
   line();
 }
 line('Next: read references/schema.md, explore entrypoints, then write floorplan/architecture.json and run build.mjs.');

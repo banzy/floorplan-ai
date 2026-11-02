@@ -63,6 +63,7 @@ By default everything is written for the app's owner, not an engineer: what each
 - connects the parts, using imports, matched requests and the AI's explicit connections;
 - runs the **Health** check;
 - detects **screens**: Next.js, React Router, Vue, SvelteKit, Remix, Nuxt, Astro, Expo, Angular, TanStack;
+- finds the **AI layer**: which files call an AI service (by outside host, package or request path, including through a configured address), build prompts, stream replies, check safety, or count cost and limits, and groups them into boards and one request walkthrough;
 - writes `graph.json` and the self-contained `index.html`, noting whether Claude Code or Codex made it, so the map's Ask bar and fix prompts name the right one.
 
 The map lays itself out in your browser with [ELK](https://eclipse.dev/elk/), so the build itself is fast.

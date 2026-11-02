@@ -77,6 +77,9 @@ Appears when Claude or Codex has just changed things. It lays the changed cards 
 ### Screens
 Every page of your app that Floorplan detected. Pick one to see everything behind it: its components, the requests it makes, the server code that answers them, the data they touch, and outside services.
 
+### AI
+Appears when the app uses AI. It answers the questions an owner has about it: where AI is used, what gets sent to it, what checks the requests and what keeps the cost under control, and which services it talks to. Pick a board to see those files and a note on what each does, or pick **Follow one AI request** to walk a request from the app through instructions, safety and cost checks to the AI service. A file's details also say which part of the AI layer it is. Apps that don't use AI have no button.
+
 ### Export
 Saves a copy of the map to send to anyone, such as a teammate, a client, or someone without Claude or Codex. It's one HTML file that opens in any browser with nothing to install. The copy has the whole map, search, screens, the tour and flows, but no Ask bar, no **Fix with Claude** or **Build this** requests, no editor links, and nothing about your computer, like its folder path. An **Exported** label beside the title shows the date, and a small **Made with Floorplan** link at the bottom leads here.
 

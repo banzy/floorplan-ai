@@ -168,10 +168,23 @@ It writes `floorplan/<project>-map.html` unless given a file. `--include` defaul
 
   Each issue has **Show on map** (highlights the affected files and endpoints with notes) and **Fix with Claude** or **Fix with Codex** (a ready-to-paste prompt naming the exact files and lines and the safe fix). It's computed by `scripts/lib/health.mjs` during scan and build, and it never stores secret values, only the file, line and a masked hint. Treat it as a quick automatic check, not a security audit.
 - **Screens.** The build detects the app's screens (Next.js, React Router, Vue, SvelteKit, Remix, Nuxt, Astro, Expo, Angular, TanStack) with `scripts/lib/screens.mjs`. It also works out what sits behind each one: its components, the requests it makes, the server code and data that answer them, and outside services. A **Screens** button lets people start from the page they know.
+- **AI.** When the app calls an AI service (OpenAI, Anthropic, Groq, Gemini, ElevenLabs, a local model, or any provider through a configured address), `scripts/lib/ai.mjs` finds the files that send requests, build prompts, stream replies, check safety, count cost and enforce limits. An **AI** button opens boards for "Where AI is used", "What gets sent to the AI", "Safety and spending limits" and each provider, plus a **Follow one AI request** walkthrough. The build prints an `AI` line when it finds any; apps with no AI get no button. See "The AI layer" below for what to add by hand.
 - **Start here.** A one-minute tour runs on first open and can be replayed from the header. It uses your `tour`, or builds one automatically.
 - **Plain words by default.** Connection types read "Uses", "Web requests", "Background jobs". Common technical terms are underlined and explained on hover. **Filters → Show technical detail** switches to developer terms and shows exports.
 
 People can also use **Flows → Request a new flow** to have the agent trace something ("how does a refund get back to the customer's card?") into a step-by-step flow. With serve.mjs these are saved to `floorplan/custom-flows.json`, and every build folds them into the map (steps pointing at deleted code are dropped with a warning). Treat that file as user content: keep it on refresh, and don't edit it unless asked.
+
+## The AI layer
+
+The scan finds *which files* play which part in an AI feature. It can't know *how the pieces are meant to work together*, so when the build prints an `AI` line, add the parts only a reader of the code can:
+
+1. **Name each part plainly.** In `descriptions/`, make sure the AI files say what they do for the owner ("Keeps each writer's free AI credit", "Decides which model answers", "Refuses harmful requests"), not "AI client". The AI boards show these descriptions.
+2. **Write one or two AI flows in `architecture.json`.** Trace what really happens for the app's main AI features: who asks, what is added to the request, what is checked before and after, what is paid or counted, which service answers, and what happens to the reply (shown, applied, saved). The generated **Follow one AI request** flow is only the typical shape; yours should name the app's real steps and anything that fails or is refused. Check that consecutive steps are connected (an import, an HTTP call or an explicit edge).
+3. **Add a tour stop** for the AI layer if the app is built around it, ending on the file that decides what is sent.
+4. **Tell the owner what you found**, in plain words: which services are called, whether replies are checked before they are used, whether there are cost or rate limits, and whether any call has none. Say so plainly when a service is called with no limit, since that is how an AI bill gets out of hand.
+5. **Never put keys or prompts in notes.** Describe what a prompt is for, not its text.
+
+If the scan misses a part (a file that guards or limits AI under a name it doesn't recognise), add it to a flow anyway; flows can name any file.
 
 ## Notes
 
