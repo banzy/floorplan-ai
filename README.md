@@ -170,7 +170,7 @@ You need [Node.js 18+](https://nodejs.org) and either Claude Code or Codex. Floo
 In the desktop app's Code tab or the CLI:
 
 ```bash
-claude plugin marketplace add haydenschmitty/floorplan
+claude plugin marketplace add banzy/floorplan-ai
 claude plugin install floorplan-ai@floorplan-ai
 ```
 
