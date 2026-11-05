@@ -196,6 +196,15 @@ The scan finds agents by their definitions, so a plain description of each is th
 3. **Say it in the report.** Name the agents and who leads whom, what tools each one can use (especially any that move money, delete data or send messages), and whether anything checks or limits what an agent may do. Say so plainly when an agent has powerful tools and no guard.
 4. **Never put instructions in notes.** Say what an agent's instructions are for, not their text.
 
+### Agent architecture
+
+For an app that calls AI, write `floorplan/agent-architecture.json` to show how it maps onto the reference shape of an AI agent. The scan can't see this, so it is only drawn when the file exists. It adds an **Agent flow** entry to the AI menu and a section at the top of the overview. Describe what the app really does, in plain words, and say "not in the app" for a stage it lacks: a single model call with no tools is a finding, not a gap to hide. Format: "agent architecture" in [schema.md](references/schema.md).
+
+1. **Read the code first**, then write a one-sentence `verdict` (single agent or several, with or without a human in the loop, autonomous loop or not, tools or none).
+2. **Fill the flow stages** you can speak to: `perception` (what the model gets to see), `reasoning`, `planning`, `guardrails`, `action`, `iterate`, `memory`, `environment`, `agents` (other agents) and `tools`. Give each a `status` (`present`, `partial` or `absent`), a plain `summary`, and `refs` to the files (`f:path`) and outside services (`n:id`) in charge.
+3. **Add `concurrent`** only when several agents or model-calling workers can run side by side; otherwise leave it out.
+4. **Never put keys or prompt text in it.** Say what something is for, not its text.
+
 ## Notes
 
 - Paths are relative to the codebase root and use forward slashes. In a multi-repo root they start with the repo folder, e.g. `api-service/src/**`.

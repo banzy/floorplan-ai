@@ -43,6 +43,7 @@
   function renderMenu() {
     let html = '';
     if (window.FloorplanAgents) html += row('agents', 'The AI agents', `${ai.agents.length} ${ai.agents.length === 1 ? 'agent' : 'agents and steps'} as a diagram: how they connect, their tools, and the code in charge of each.`);
+    if (window.FloorplanAgentArchitecture) html += row('archflow', ai.agentArchitecture.title, 'How the app maps onto an AI agent: what it perceives, how it decides, what it can do, and what it remembers.');
     if (ai.flow) html += row('flow', ai.flow.title, 'Watch a request go from the app, through instructions, safety and cost checks, to the AI service.');
     html += `<div class="ai-g">Where it happens</div>`;
     for (const b of general) html += row(b.id, b.title, b.question);
@@ -53,7 +54,7 @@
     menu.innerHTML = html;
     menu.querySelectorAll('[data-ai]').forEach((el) => el.onclick = (ev) => {
       ev.stopPropagation();
-      if (el.dataset.ai === 'agents') { closeMenu(); window.FloorplanAgents.open(); } else if (el.dataset.ai === 'flow') followRequest(); else showBoard(boardById.get(el.dataset.ai));
+      if (el.dataset.ai === 'archflow') { closeMenu(); window.FloorplanAgentArchitecture.open(); } else if (el.dataset.ai === 'agents') { closeMenu(); window.FloorplanAgents.open(); } else if (el.dataset.ai === 'flow') followRequest(); else showBoard(boardById.get(el.dataset.ai));
     });
   }
   function place() {
