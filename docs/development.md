@@ -29,7 +29,7 @@ skills/floorplan-ai/
     refresh.mjs    incremental update: re-scan, carry over, flag changes, rebuild
     recent.mjs     facts for marking recent work
     open.mjs       start or reuse the map's server, and open the browser
-    lib/           extraction, import resolution, route matching, Health, screens, the AI layer, which agent is running, helpers
+    lib/           extraction, import resolution, route matching, Health, screens, the AI layer and its agents, which agent is running, helpers
   assets/
     viewer.html    the map (template the build fills in)
     ui/            viewer extensions: Theme button, blueprints, glossary, Health, recent work, screens, AI, tour, waitlist card
@@ -83,6 +83,7 @@ The tests use Node's built-in test runner, so there's nothing to install (`npm t
 | `health.test.mjs` | which endpoints Health calls open to anyone (FastAPI sample in `fixtures/`) |
 | `stack-health.test.mjs` | Health's checks for Supabase row-level security, Firebase rules, Stripe webhook signatures, secret keys in public variables and CORS, with look-alikes each must leave alone, and a whole sample app done wrong and done right |
 | `ai.test.mjs` | the AI layer: files found by role (prompt, safety, cost, streaming, call), everyday words like "cost" and "price" left alone, providers tied to their outside-service nodes, calls through a configured address, the boards and the request walkthrough, and no AI button for an app without AI |
+| `ai-agents.test.mjs` | the agents view: agents, models, tools and handoffs read from the OpenAI Agents SDK, CrewAI, LangGraph and class-based agents, an HTTP agent or plain class named Agent left alone, each tool matched to its file and line, the code in charge scoped to one agent and not every agent in a shared file, LangGraph steps kept apart from an agent team, no prompt text in graph.json, and no agents for an app that only calls an AI service |
 | `firebase.test.mjs` | Firebase Cloud Functions: callables and onRequest functions as endpoints, the website's calls to them, Screens, Health, background functions (React + Firebase sample in `fixtures/`) |
 | `blueprint.test.mjs` | a map planned from a PRD before any code exists: plan.json errors, endpoints and calls, Screens, the design review, refreshing and switching to the real code (sample PRD in `fixtures/`) |
 | `blueprint-change.test.mjs` | changing a blueprint from the map: the agent's updated plan is checked, saved and highlighted, retried once when it fails the checks, and undone (stand-in CLI in `fixtures/fake-cli/`) |

@@ -476,7 +476,7 @@ if (hs && (hs.high || hs.medium || hs.low)) {
   for (const i of graph.health.issues.filter((x) => x.severity !== 'low' && !dismissalFor(x, graph.health.dismissed)).slice(0, 8)) report.push(`  [${i.severity}] ${i.title}`);
 }
 if (graph.screens?.length) report.push(`SCREENS  ${graph.screens.length} detected`);
-if (graph.ai) report.push(`AI  ${graph.ai.files.length} file(s) across ${graph.ai.providers.length} provider(s): ${graph.ai.providers.map((p) => p.label).join(', ')}`);
+if (graph.ai) report.push(`AI  ${graph.ai.files.length} file(s) across ${graph.ai.providers.length} provider(s): ${graph.ai.providers.map((p) => p.label).join(', ')}${graph.ai.agents?.length ? ` · ${graph.ai.agents.length} agent(s)` : ''}`);
 report.push(graph.recent
   ? `RECENT WORK  ${graph.recent.items.length} card(s) highlighted across ${graph.recent.tasks.length} task(s)`
   : `RECENT WORK  none highlighted${fs.existsSync(recentFile) ? '' : ' (no recent-work.json)'}`);
