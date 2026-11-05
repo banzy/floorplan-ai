@@ -20,7 +20,7 @@
   document.head.appendChild(style);
 
   const boardById = new Map(ai.boards.map((b) => [b.id, b]));
-  const general = ai.boards.filter((b) => !b.id.startsWith('ai:provider:'));
+  const general = ai.boards.filter((b) => !b.id.startsWith('ai:provider:') && b.id !== 'ai:agents');
   const byProvider = ai.boards.filter((b) => b.id.startsWith('ai:provider:'));
 
   function showBoard(b) {
@@ -42,6 +42,7 @@
   const row = (key, title, sub) => `<button class="ai-r" data-ai="${h(key)}"><b>${h(title)}</b><span>${h(sub)}</span></button>`;
   function renderMenu() {
     let html = '';
+    if (window.FloorplanAgents) html += row('agents', 'The AI agents', `${ai.agents.length} ${ai.agents.length === 1 ? 'agent' : 'agents and steps'} as a diagram: how they connect, their tools, and the code in charge of each.`);
     if (ai.flow) html += row('flow', ai.flow.title, 'Watch a request go from the app, through instructions, safety and cost checks, to the AI service.');
     html += `<div class="ai-g">Where it happens</div>`;
     for (const b of general) html += row(b.id, b.title, b.question);
@@ -52,7 +53,7 @@
     menu.innerHTML = html;
     menu.querySelectorAll('[data-ai]').forEach((el) => el.onclick = (ev) => {
       ev.stopPropagation();
-      if (el.dataset.ai === 'flow') followRequest(); else showBoard(boardById.get(el.dataset.ai));
+      if (el.dataset.ai === 'agents') { closeMenu(); window.FloorplanAgents.open(); } else if (el.dataset.ai === 'flow') followRequest(); else showBoard(boardById.get(el.dataset.ai));
     });
   }
   function place() {
@@ -82,7 +83,7 @@
   window.addEventListener('resize', () => { if (isOpen()) place(); });
 
   // ---------- details panel ----------
-  const ROLE_LABEL = { call: 'Sends requests to an AI service', prompt: 'Builds the instructions and context for the AI', stream: 'Streams the AI\'s reply', tools: 'Lets the AI use tools', guard: 'Checks for safety', meter: 'Tracks cost and limits', memory: 'Looks things up for the AI' };
+  const ROLE_LABEL = { agent: 'Defines an AI agent', call: 'Sends requests to an AI service', prompt: 'Builds the instructions and context for the AI', stream: 'Streams the AI\'s reply', tools: 'Lets the AI use tools', guard: 'Checks for safety', meter: 'Tracks cost and limits', memory: 'Looks things up for the AI' };
   const fileInfo = new Map(ai.files.map((f) => [f.id, f]));
   FP.addPanelSection('item', (id) => {
     const f = typeof id === 'string' ? fileInfo.get(id) : null;

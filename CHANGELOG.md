@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **An Agents view for apps built on AI agents.** When the scan finds AI agents, the map gets an **Agents** button (and a first entry in the AI menu) that draws them as a diagram: a request starts, passes its safety and cost checks, reaches a lead agent, is handed on to other agents or workflow steps, and ends at an AI service. Teams that aren't connected get their own lane. Each agent card shows its model, its tools and the files in charge of it; click one for the file and line of every tool, what it hands work to, and **Show on the map**, **Follow it** and **Open its file**. Hover or select to follow one agent's connections. It reads agents from the OpenAI Agents SDK, Claude Agent SDK, LangGraph, CrewAI, AutoGen, Mastra, Vercel AI SDK, LlamaIndex, Pydantic AI, smolagents and Google ADK, and finds code that runs a model with tools in a loop even without a framework. Prompt text is never stored, only whether an agent has instructions. Apps that call AI without agents are unchanged.
+
 ## 0.7.0 (2026-11-02)
 
 - **An AI view for apps that use AI.** When the scan finds code that calls an AI service, the map gets an **AI** button. It answers where AI is used, what is sent to it, what checks requests and keeps the cost under control, and which services it talks to, and it can walk one request from the app through instructions, safety and cost checks to the AI service. It finds OpenAI, Anthropic, Groq, Gemini, Mistral, ElevenLabs and others by host or package, and calls made through a configured address by their request path. The skill now asks for plain descriptions of the AI files, an AI flow of the app's real steps, and a plain report of whether calls have safety and cost limits. Apps with no AI are unchanged.

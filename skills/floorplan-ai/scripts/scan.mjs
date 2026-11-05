@@ -13,6 +13,7 @@ import { extract, callableCallsVia } from './lib/extract.mjs';
 import { findIssues } from './lib/health.mjs';
 import { findScreens } from './lib/screens.mjs';
 import { findAi } from './lib/ai.mjs';
+import { findAgents } from './lib/agents.mjs';
 import { createResolver } from './lib/resolve.mjs';
 import { resolveRoutes, matchCalls } from './lib/routes.mjs';
 
@@ -85,6 +86,7 @@ for (const { path: p, repo } of fileList) {
       try { const iss = findIssues(src, f); if (iss?.length) f.issues = iss; } catch (e) { f.healthError = String(e.message || e); }
       try { const scr = findScreens(src, f); if (scr?.length) f.screens = scr; } catch (e) { f.screensError = String(e.message || e); }
       try { const ai = findAi(src, f); if (ai) f.ai = ai; } catch (e) { f.aiError = String(e.message || e); }
+      try { const ag = findAgents(src, f); if (ag) f.agentDecl = ag; } catch (e) { f.agentsError = String(e.message || e); }
     }
   } else if (category === 'code' || category === 'config' || category === 'docs') {
     // too big to read and parse, but still on the map: count its lines without loading it all
@@ -178,6 +180,7 @@ const scan = {
     ...(f.issues ? { issues: f.issues } : {}),
     ...(f.screens ? { screens: f.screens } : {}),
     ...(f.ai ? { ai: f.ai } : {}),
+    ...(f.agentDecl ? { agentDecl: f.agentDecl } : {}),
     ...(f.triggers ? { triggers: f.triggers } : {}),
   })),
   edges: [...edgeMap.values()].map(({ from, to, names, count, dynamic }) => ({ from, to, ...(names.length ? { names } : {}), ...(count > 1 ? { count } : {}), ...(dynamic ? { dynamic } : {}) })),
