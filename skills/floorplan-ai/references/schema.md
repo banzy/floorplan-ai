@@ -130,6 +130,26 @@ Good candidates:
 
 `{ "tasks": [] }` clears all highlights.
 
+## agent architecture
+
+`floorplan/agent-architecture.json`, optional, only used when the app calls AI. It shows how the app maps onto the reference shape of an AI agent. Written by hand after reading the code; the build checks it and drops what is wrong, with a warning.
+
+```json
+{ "title": "AI agent architecture", "verdict": "One sentence: single or several agents, human in the loop or not, tools or none.",
+  "flow": { "intro": "optional", "stages": [
+    { "id": "perception", "label": "Perception", "status": "present", "summary": "What the model gets to see.",
+      "sub": "gathers context", "tags": ["message", "history"], "refs": ["f:src/context.ts", "n:db"] } ] },
+  "concurrent": { "trigger": "A request", "stages": [ { "id": "readers", "status": "present", "summary": "…" } ],
+    "readers": [ { "label": "Plot threads", "short": "Plots", "ref": "f:src/plot.ts" } ],
+    "controls": { "title": "How overlapping work is kept safe", "items": [ { "text": "One turn at a time.", "ref": "f:src/lock.ts" } ] } },
+  "gaps": { "title": "Worth knowing", "items": ["Plain sentences about what to watch for."] } }
+```
+- `flow.stages[].id` is one of `perception`, `reasoning`, `planning`, `guardrails`, `action`, `iterate`, `memory`, `environment`, `agents`, `tools`. A stage you leave out is drawn as not in the app. At least one stage is needed.
+- `concurrent.stages[].id` is one of `initiator`, `readers`, `toolkit`, `results`, `aggregate`. Leave `concurrent` out unless several agents or workers can run side by side.
+- `status` is `present`, `partial` or `absent`. `summary` is required, plain words for the app's owner.
+- `sub` is a short caption for the diagram box (40 characters), and `tags` up to 4 short phrases (24 characters each) listed inside the Perception and Action boxes. Both optional.
+- `refs` and `ref` are `f:<file path>` or `n:<node id>`. Ones that aren't on the map are left out. No keys, no prompt text.
+
 ## Full example
 
 A frontend repo and a backend repo side by side:

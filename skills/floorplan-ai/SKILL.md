@@ -169,6 +169,7 @@ It writes `floorplan/<project>-map.html` unless given a file. `--include` defaul
   Each issue has **Show on map** (highlights the affected files and endpoints with notes) and **Fix with Claude** or **Fix with Codex** (a ready-to-paste prompt naming the exact files and lines and the safe fix). It's computed by `scripts/lib/health.mjs` during scan and build, and it never stores secret values, only the file, line and a masked hint. Treat it as a quick automatic check, not a security audit.
 - **Screens.** The build detects the app's screens (Next.js, React Router, Vue, SvelteKit, Remix, Nuxt, Astro, Expo, Angular, TanStack) with `scripts/lib/screens.mjs`. It also works out what sits behind each one: its components, the requests it makes, the server code and data that answer them, and outside services. A **Screens** button lets people start from the page they know.
 - **AI.** When the app calls an AI service (OpenAI, Anthropic, Groq, Gemini, ElevenLabs, a local model, or any provider through a configured address), `scripts/lib/ai.mjs` finds the files that send requests, build prompts, stream replies, check safety, count cost and enforce limits. An **AI** button opens boards for "Where AI is used", "What gets sent to the AI", "Safety and spending limits" and each provider, plus a **Follow one AI request** walkthrough. The build prints an `AI` line when it finds any; apps with no AI get no button. See "The AI layer" below for what to add by hand.
+- **Agents.** When the scan finds AI agents (OpenAI Agents SDK, Claude Agent SDK, LangGraph, CrewAI, AutoGen, Mastra, Vercel AI SDK, LlamaIndex, Pydantic AI and similar, or code that runs an AI model with tools in a loop), `scripts/lib/agents.mjs` records each agent's name, model, tools and handoffs, and the files in charge of it. An **Agents** button opens a diagram: a request starts, passes its safety and cost checks, reaches a lead agent, is handed on to other agents or workflow steps, and ends at an AI service. Each agent card shows its tools and the code in charge of it, and clicking one opens the details with the file and line of every tool, **Show on the map**, **Follow it** and **Open its file**. Prompt text is never stored, only that an agent has instructions. See "Agents" under "The AI layer" for what to add by hand.
 - **Start here.** A one-minute tour runs on first open and can be replayed from the header. It uses your `tour`, or builds one automatically.
 - **Plain words by default.** Connection types read "Uses", "Web requests", "Background jobs". Common technical terms are underlined and explained on hover. **Filters → Show technical detail** switches to developer terms and shows exports.
 
@@ -185,6 +186,24 @@ The scan finds *which files* play which part in an AI feature. It can't know *ho
 5. **Never put keys or prompts in notes.** Describe what a prompt is for, not its text.
 
 If the scan misses a part (a file that guards or limits AI under a name it doesn't recognise), add it to a flow anyway; flows can name any file.
+
+### Agents
+
+The scan finds agents by their definitions, so a plain description of each is the part worth writing:
+
+1. **Say what each agent is for.** The card shows the agent's own `description`/`goal` when the code has one, and a generated line otherwise. Where the code has none, describe the agent's file in `descriptions/` in terms of the job it does for the owner ("Decides whether a customer gets a refund"), and describe each tool's file the same way.
+2. **Check the team.** Handoffs, tools that are other agents (`.asTool()`), LangGraph edges and CrewAI crews are found; a handoff built at run time (a router function that picks the next agent) isn't. Where the app does that, add an explicit edge in `architecture.json` and a flow that names the real order.
+3. **Say it in the report.** Name the agents and who leads whom, what tools each one can use (especially any that move money, delete data or send messages), and whether anything checks or limits what an agent may do. Say so plainly when an agent has powerful tools and no guard.
+4. **Never put instructions in notes.** Say what an agent's instructions are for, not their text.
+
+### Agent architecture
+
+For an app that calls AI, write `floorplan/agent-architecture.json` to show how it maps onto the reference shape of an AI agent. The scan can't see this, so it is only drawn when the file exists. It adds an **Agent flow** entry to the AI menu and a section at the top of the overview. Describe what the app really does, in plain words, and say "not in the app" for a stage it lacks: a single model call with no tools is a finding, not a gap to hide. Format: "agent architecture" in [schema.md](references/schema.md).
+
+1. **Read the code first**, then write a one-sentence `verdict` (single agent or several, with or without a human in the loop, autonomous loop or not, tools or none).
+2. **Fill the flow stages** you can speak to: `perception` (what the model gets to see), `reasoning`, `planning`, `guardrails`, `action`, `iterate`, `memory`, `environment`, `agents` (other agents) and `tools`. Give each a `status` (`present`, `partial` or `absent`), a plain `summary`, and `refs` to the files (`f:path`) and outside services (`n:id`) in charge.
+3. **Add `concurrent`** only when several agents or model-calling workers can run side by side; otherwise leave it out.
+4. **Never put keys or prompt text in it.** Say what something is for, not its text.
 
 ## Notes
 

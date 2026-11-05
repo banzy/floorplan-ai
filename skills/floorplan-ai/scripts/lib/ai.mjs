@@ -19,13 +19,14 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { buildAgents } from './agents.mjs';
 
 const AI_LANGS = new Set(['typescript', 'javascript', 'python', 'php', 'ruby', 'go', 'java', 'kotlin', 'rust', 'csharp', 'swift', 'dart', 'vue', 'svelte']);
 
 /** Outside hosts and packages that mean "this file talks to an AI provider". */
 const PROVIDERS = [
-  { id: 'openai', label: 'OpenAI', hosts: [/(^|\.)api\.openai\.com$/], pkgs: [/^npm:openai$/, /^pypi:openai$/, /^go:github\.com\/sashabaranov\/go-openai/] },
-  { id: 'anthropic', label: 'Anthropic', hosts: [/(^|\.)api\.anthropic\.com$/], pkgs: [/^npm:@anthropic-ai\//, /^pypi:anthropic$/] },
+  { id: 'openai', label: 'OpenAI', hosts: [/(^|\.)api\.openai\.com$/], pkgs: [/^npm:openai$/, /^pypi:openai$/, /^npm:@openai\/agents/, /^pypi:openai-agents$/, /^go:github\.com\/sashabaranov\/go-openai/] },
+  { id: 'anthropic', label: 'Anthropic', hosts: [/(^|\.)api\.anthropic\.com$/], pkgs: [/^npm:@anthropic-ai\//, /^pypi:anthropic$/, /^pypi:claude-agent-sdk$/, /^pypi:claude-code-sdk$/] },
   { id: 'google', label: 'Google Gemini', hosts: [/generativelanguage\.googleapis\.com$/, /aiplatform\.googleapis\.com$/], pkgs: [/^npm:@google\/(generative-ai|genai)$/, /^pypi:google$/, /^pypi:google-generativeai$/, /^pypi:vertexai$/] },
   { id: 'groq', label: 'Groq', hosts: [/(^|\.)api\.groq\.com$/], pkgs: [/^npm:groq-sdk$/, /^pypi:groq$/] },
   { id: 'mistral', label: 'Mistral', hosts: [/(^|\.)api\.mistral\.ai$/], pkgs: [/^npm:@mistralai\//, /^pypi:mistralai$/] },
@@ -43,6 +44,13 @@ const PROVIDERS = [
   // toolkits that talk to several providers; shown as their own name
   { id: 'vercel-ai', label: 'Vercel AI SDK', hosts: [], pkgs: [/^npm:ai$/, /^npm:@ai-sdk\//] },
   { id: 'langchain', label: 'LangChain', hosts: [], pkgs: [/^npm:langchain$/, /^npm:@langchain\//, /^pypi:langchain/] },
+  { id: 'crewai', label: 'CrewAI', hosts: [], pkgs: [/^pypi:crewai/] },
+  { id: 'autogen', label: 'AutoGen', hosts: [], pkgs: [/^pypi:(py)?autogen/, /^pypi:ag2$/] },
+  { id: 'mastra', label: 'Mastra', hosts: [], pkgs: [/^npm:@mastra\//] },
+  { id: 'llamaindex', label: 'LlamaIndex', hosts: [], pkgs: [/^pypi:llama-index/, /^npm:llamaindex$/] },
+  { id: 'pydantic-ai', label: 'Pydantic AI', hosts: [], pkgs: [/^pypi:pydantic-ai/] },
+  { id: 'smolagents', label: 'smolagents', hosts: [], pkgs: [/^pypi:smolagents$/] },
+  { id: 'google-adk', label: 'Google ADK', hosts: [], pkgs: [/^pypi:google-adk$/, /^npm:@google\/adk$/] },
   { id: 'litellm', label: 'LiteLLM', hosts: [], pkgs: [/^pypi:litellm$/, /^npm:litellm$/] },
 ];
 const providerById = new Map(PROVIDERS.map((p) => [p.id, p]));
@@ -101,8 +109,9 @@ export function findAi(src, file) {
 
 // ---------------------------------------------------------------------------------------------------------
 
-const ROLE_ORDER = ['prompt', 'stream', 'guard', 'meter', 'tools', 'memory', 'call'];
+const ROLE_ORDER = ['agent', 'prompt', 'stream', 'guard', 'meter', 'tools', 'memory', 'call'];
 const ROLE_NOTE = {
+  agent: () => 'Defines an AI agent: its instructions, model and tools',
   call: (prov) => `Sends requests to ${prov || 'an AI service'}`,
   prompt: () => 'Holds the instructions and context sent to the AI',
   stream: () => 'Shows or sends the AI\'s reply piece by piece as it is written',
@@ -113,6 +122,7 @@ const ROLE_NOTE = {
 };
 const STAGE = { prompt: 1, stream: 2, guard: 3, meter: 4, tools: 5, memory: 5, call: 6 };
 const FLOW_NOTE = {
+  agent: 'An AI agent takes over, with its own instructions and tools.',
   prompt: 'The question and its context are put together with the instructions the AI follows.',
   stream: 'The reply comes back piece by piece instead of all at once.',
   guard: 'The request is checked for safety before or after it reaches the AI.',
@@ -144,6 +154,7 @@ export function buildAi({ graph, scan, root }) {
     for (const m of sf.ai.models || []) e.models.add(m);
     // a model id names its maker, but only counts as a call when the same file reaches that maker
   }
+  for (const sf of scan.files || []) if (sf.agentDecl && files.has(sf.path) && !isTest(sf.path)) entry(sf.path).roles.add('agent');
   const hinted = new Map(); // path -> Set(provider ids from model ids)
   for (const sf of scan.files || []) if (sf.ai?.providers?.length && files.has(sf.path)) hinted.set(sf.path, new Set(sf.ai.providers));
   const callers = new Map(); // provider id -> Set(paths)
@@ -158,14 +169,14 @@ export function buildAi({ graph, scan, root }) {
   for (const e of scan.extEdges || []) { const prov = providerOfPkg(e.pkg); if (prov) addCall(e.from, prov); }
   // calls through a configured address: a request path, but no host and no provider named in the file
   const gateways = [...info].filter(([p, e]) => e.roles.has('call') && !e.providers.size && !CONFIG_FILE.test(p)).map(([p]) => p);
-  if (!callers.size && !gateways.length) return null; // no sign the app talks to an AI service: nothing to show
+  if (!callers.size && !gateways.length && ![...info.values()].some((e) => e.roles.has('agent'))) return null; // no sign the app talks to an AI service: nothing to show
 
   // a file that mentions a model id and sits with the callers (same part of the app) is named for that maker
   for (const [p, set] of hinted) if (info.has(p)) for (const id of set) if (providerById.has(id)) info.get(p).providers.add(id);
 
   // keep only the files that really belong to the AI layer
   for (const [p, e] of [...info]) {
-    const own = e.roles.size && (e.roles.has('call') || e.roles.has('prompt') || e.roles.has('guard') || e.roles.has('meter') || e.roles.has('stream') || e.roles.has('tools') || e.roles.has('memory'));
+    const own = e.roles.size && (e.roles.has('agent') || e.roles.has('call') || e.roles.has('prompt') || e.roles.has('guard') || e.roles.has('meter') || e.roles.has('stream') || e.roles.has('tools') || e.roles.has('memory'));
     if (!own) info.delete(p);
   }
   if (!info.size) return null;
@@ -227,7 +238,7 @@ export function buildAi({ graph, scan, root }) {
     const first = ROLE_NOTE[rs[0]](provLabel(info.get(p).providers));
     return rs.length > 1 ? `${first}, and also ${join(rs.slice(1).map((r) => ROLE_NOTE[r]('').replace(/^[A-Z]/, (c) => c.toLowerCase())).slice(0, 2))}` : first;
   };
-  const kindOf = (p) => (info.get(p).roles.has('call') ? 'call' : info.get(p).roles.has('prompt') ? 'prompt' : info.get(p).roles.has('guard') ? 'guard' : info.get(p).roles.has('meter') ? 'meter' : 'part');
+  const kindOf = (p) => (info.get(p).roles.has('agent') ? 'agent' : info.get(p).roles.has('call') ? 'call' : info.get(p).roles.has('prompt') ? 'prompt' : info.get(p).roles.has('guard') ? 'guard' : info.get(p).roles.has('meter') ? 'meter' : 'part');
   const item = (p, only) => ({ id: 'f:' + p, note: noteOf(p, only), kind: kindOf(p) });
   const ext = (id) => ({ id: 'n:' + id, note: nodes.get(id)?.summary || 'An outside AI service', kind: 'outside' });
 
@@ -275,7 +286,21 @@ export function buildAi({ graph, scan, root }) {
   if (firstProvider?.nodes?.[0]) steps.push({ ref: 'n:' + firstProvider.nodes[0], note: 'The AI service writes the reply and sends it back.', role: 'provider' });
   const flow = steps.length >= 3 ? { title: 'Follow one AI request', description: 'A request travels from the app through instructions, safety and cost checks to the AI service. Each step is the main file for that job.', steps: steps.slice(0, 8).map(({ ref, note }) => ({ ref, note })) } : null;
 
+  // ---------- agents: who they are, how they connect, and the code in charge of each ----------
+  const importedBy = new Map();
+  for (const [a, set] of importsOf) for (const b of set) { if (!importedBy.has(b)) importedBy.set(b, new Set()); importedBy.get(b).add(a); }
+  let team = null;
+  try { team = buildAgents({ scan, graph, files, info, importsOf, importedBy, isTest, kindsOf, makerOf: (m) => MODEL_MAKER.find(([re]) => re.test(m))?.[1] }); } catch { team = null; }
+  if (team) {
+    boards.splice(1, 0, {
+      id: 'ai:agents', title: 'The AI agents', icon: 'spark',
+      question: 'Every AI agent and the code in charge of it',
+      items: [...new Set(team.agents.flatMap((a) => [a.file, ...a.code.map((c) => c.id.slice(2))]))].slice(0, 22).map((p) => ({ id: 'f:' + p, note: team.agents.filter((a) => a.file === p).map((a) => `Defines ${a.name}`).join('; ') || noteOf(p), kind: team.agents.some((a) => a.file === p) ? 'agent' : kindOf(p) })),
+    });
+  }
+
   return {
+    ...(team ? { agents: team.agents, agentLinks: team.links } : {}),
     providers,
     files: ranked.map((p) => ({ id: 'f:' + p, roles: rolesOf(p), providers: [...info.get(p).providers], ...(info.get(p).models.size ? { models: [...info.get(p).models].slice(0, 4) } : {}) })),
     boards,
